@@ -33,9 +33,9 @@ thread_create(void (*func)())
 
 对了，这一部分实际上还有一个问题没有明白，实验中描述如下：  
 使用gdb帮助调试的时候，如果使用下面的命令：  
-(gdb) file user/_uthread
-Reading symbols from user/_uthread...
-(gdb) b uthread.c:60
+(gdb) file user/_uthread  
+Reading symbols from user/_uthread...  
+(gdb) b uthread.c:60  
 
 This sets a breakpoint at line 60 of uthread.c. The breakpoint may (or may not) be triggered before you even run uthread. How could that happen?  
 
