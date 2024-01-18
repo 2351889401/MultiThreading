@@ -1,0 +1,17 @@
+26
+
+In fact, the content of this experiment took me a considerable amount of time, even though its difficulty was only 'moderate', haha.
+
+(1) The first challenging aspect was encountered in Experiment 1, 'Uthread: switching between threads.' 
+When assigning a value to the 'sp' (stack pointer) of the thread, I used the initial position of the 'stack,' 
+leading to numerous strange values when accessing the 'state' variable of 'all_thread' within the thread. 
+After several days and becoming more proficient with 'GDB' (initially, I wanted to take a shortcut and not use 'GDB,' 
+but later realized I had to learn how to use it, so no shortcuts!), 
+I finally realized: oh my god, 'sp' changes from high address to low address. 
+Consequently, if the initial 'sp' of the thread is set to a low address, the thread, when running, 
+would write parameters into the memory area of other threads (struct thread), causing errors in the states of those threads!
+
+(2) The second challenge was in Experiment 3, 'Barrier,' 
+where an understanding of the execution scenarios of 'pthread_cond_wait' and 'pthread_cond_broadcast' was needed. 
+I attempted to write some simple programs using these two functions. 
+Later, as I became more adept at using them, solving the 'Barrier' experiment became straightforward.

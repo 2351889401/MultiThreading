@@ -1,0 +1,5 @@
+If multiple threads are simultaneously inserting elements into the same hash bucket, 
+entering the 'insert' function concurrently, 
+or if multiple threads enter the 'insert' function one after another 
+but the current hash bucket's first element has not been updated to point to the actual first element, 
+a situation of 'keys missing' may occur.
