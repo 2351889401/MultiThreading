@@ -45,7 +45,7 @@ This sets a breakpoint at line 60 of uthread.c. The breakpoint may (or may not) 
 可以从第1张图看到，当触发断点的时候，实际上操作系统的第一个用户进程“init”进程都还没有启动，因为如果启动的话会输出“init: starting sh”。  
 第2张图是在gdb中查看线程的情况，发现是某个CPU上到了断点处，但是实际上并没有真正的执行，因为此时如果在gdb中使用“print”语句，查看“uthread.c”中全局变量的信息，实际上并没有。  
 所以，自己仍然是不能理解这个原因，为什么程序在尚未运行的时候会被触发，甚至在操作系统的启动之前！  
-
+******  
 实验二：基于pthread线程库解决“keys missing”的问题，并完成线程加速  
 “keys missing”的问题好解决，主要就是通过加锁的方式，这里不去赘述；主要讨论的是线程加速的问题。  
 两个线程对于哈希表（实际上是5个哈希桶，每个桶以链表形式存放key冲突的数据）的更新可能是：  
@@ -68,3 +68,28 @@ pthread_mutex_unlock(&myMutex[i]);
 下图的结果显示了双线程的插入速度，相比单线程，速度是 34915/16176=2.15 倍。  
 ![](https://github.com/2351889401/MultiThreading/blob/main/images/speed.png)  
 
+******  
+实验三：基于pthread线程库实现barrier场景——所有线程都必须在barrier处等待，直到所有其他线程全部到达  
+难点在于：当条件满足（所有线程到达barrier），所有线程可以离开当前barrier，进入下一次循环；而进入下次循环的线程对一些变量的影响，不应当影响仍然处于“上一阶段还没有离开barrier”的线程  
+因此，主要代码如下（这一部分，建议先去自己尝试写1~2个简单代码了解pthread_cond_wait和pthread_cond_broadcast 结合 pthread_mutex_lock的用法）：  
+```
+static void 
+barrier()
+{
+  // YOUR CODE HERE
+  //
+  // Block until all threads have called barrier() and
+  // then increment bstate.round.
+  //
+  pthread_mutex_lock(&bstate.barrier_mutex);
+  bstate.nthread++;
+  if(bstate.nthread > 0 && bstate.nthread < nthread) pthread_cond_wait(&bstate.barrier_cond, &bstate.barrier_mutex);
+  else {
+    bstate.round++;
+    bstate.nthread = 0;
+    pthread_cond_broadcast(&bstate.barrier_cond);
+  }
+  pthread_mutex_unlock(&bstate.barrier_mutex);
+}
+```
+另外，如果对于一个解决方案，你能肯定它是正确的，那就相信你的判断，耐心的等待测评结果就好！（因为像本实验的测评结果会花一些时间，要相信自己！）
