@@ -46,4 +46,23 @@ This sets a breakpoint at line 60 of uthread.c. The breakpoint may (or may not) 
 第2张图是在gdb中查看线程的情况，发现是某个CPU上到了断点处，但是实际上并没有真正的执行，因为此时如果在gdb中使用“print”语句，查看“uthread.c”中全局变量的信息，实际上并没有。  
 所以，自己仍然是不能理解这个原因，为什么程序在尚未运行的时候会被触发，甚至在操作系统的启动之前！  
 
-实验二：
+实验二：基于pthread线程库解决“keys missing”的问题，并完成线程加速  
+“keys missing”的问题好解决，主要就是通过加锁的方式，这里不去赘述；主要讨论的是线程加速的问题。  
+两个线程对于哈希表（实际上是5个哈希桶，每个桶以链表形式存放key冲突的数据）的更新可能是：  
+（1）同时insert：如果插入相同的哈希桶，需要加锁，否则会有“keys missing”；如果插入不同的哈希桶，不需要加锁  
+（2）一个insert，一个update：无论操作的是不是相同的哈希桶，不需要互斥锁，因为本身就互不干扰  
+（3）同时update：如果是不同的key值，不需要加锁；如果是相同的key值，对于本次实验不加锁也没关系，但实际上为了正确性应当加锁的。  
+综上，只有同时“insert”插入相同哈希桶的情况，才需要加互斥锁，这种做法的效率也是比较高的，代码如下：  
+```
+//互斥锁的定义 每个哈希桶1个互斥锁
+pthread_mutex_t myMutex[5];
+
+//互斥锁的初始化
+for(int i=0; i<NBUCKET; i++) pthread_mutex_init(&myMutex[i], NULL);
+
+//在put函数中insert处使用互斥锁
+pthread_mutex_lock(&myMutex[i]);
+insert(key, value, &table[i], table[i]);
+pthread_mutex_unlock(&myMutex[i]);
+```  
+下图的结果显示了双线程的插入速度，相比单线程，速度是 倍。  
