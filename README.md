@@ -23,7 +23,7 @@ thread_create(void (*func)())
   t->ctx.sp = (uint64)(t->stack)+STACK_SIZE;
 }
 ```
-**这里有个很重要的点就是：t->ctx.sp = (uint64)(t->stack)+STACK_SIZE; **  
+**这里有个很重要的点就是：t->ctx.sp = (uint64)(t->stack)+STACK_SIZE;**  
 因为sp（栈指针）是从高地址向低地址变化的，所以线程的初始sp应该在高地址。   
 实际上，我最开始做的时候将sp放在了低地址，这就导致当“thread 1”运行时，因为“thread 1”运行在自己的“栈”上（这个“栈”实际上使我们通过“sturct thread”分配的空间，是一段连续的内存），而此时的“sp”随着地址的减小，很显然会干扰到前一个线程的“栈”空间保存的内容，此时读取“all_thread[0]->state”（也就是thread 0线程）的状态就错误了，会出现很离谱的数据。  
 这里画出各个线程的内存空间（或者说运行空间），包括了栈、状态、切换所需的上下文信息。  
@@ -31,3 +31,14 @@ thread_create(void (*func)())
 这个问题困扰了自己很久。实际上，最开始的时候很懒，不想使用“GDB”调试，觉得自己完全能做好这些，结果还是在找不出错误的时候依靠“GDB”调试，一步一步直到发现出现错误的指令，这才找到问题。**所以，不要想着走捷径！**  
 这一部分其他的代码很简单，就不给出了。如果需要，请查看源码“user/uthread.c和user/uthread_switch.S”。  
 
+对了，这一部分实际上还有一个问题没有明白，实验中描述如下：  
+使用gdb帮助调试的时候，如果使用下面的命令：  
+(gdb) file user/_uthread
+Reading symbols from user/_uthread...
+(gdb) b uthread.c:60
+
+This sets a breakpoint at line 60 of uthread.c. The breakpoint may (or may not) be triggered before you even run uthread. How could that happen?  
+
+实际上，也确实发现了这个问题，但是想不明白为什么会出现，下面是在gdb中调试的截图：
+
+实验二：
