@@ -65,4 +65,6 @@ pthread_mutex_lock(&myMutex[i]);
 insert(key, value, &table[i], table[i]);
 pthread_mutex_unlock(&myMutex[i]);
 ```  
-下图的结果显示了双线程的插入速度，相比单线程，速度是 倍。  
+下图的结果显示了双线程的插入速度，相比单线程，速度是 34915/16176=2.15 倍。  
+![](https://github.com/2351889401/MultiThreading/blob/main/images/speed.png)  
+
