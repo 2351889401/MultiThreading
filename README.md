@@ -92,4 +92,5 @@ barrier()
   pthread_mutex_unlock(&bstate.barrier_mutex);
 }
 ```
-另外，如果对于一个解决方案，你能肯定它是正确的，那就相信你的判断，耐心的等待测评结果就好！（因为像本实验的测评结果会花一些时间，要相信自己！）
+另外，如果对于一个解决方案，你能肯定它是正确的，那就相信你的判断，耐心的等待测评结果就好！（因为像本实验的测评结果会花一些时间，要相信自己！）  
+![](https://github.com/2351889401/MultiThreading/blob/main/images/barrier.png)
