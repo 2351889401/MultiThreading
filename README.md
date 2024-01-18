@@ -43,7 +43,7 @@ This sets a breakpoint at line 60 of uthread.c. The breakpoint may (or may not) 
 ![](https://github.com/2351889401/MultiThreading/blob/main/images/not_understand1.png)  
 ![](https://github.com/2351889401/MultiThreading/blob/main/images/not_understand2.png)  
 可以从第1张图看到，当触发断点的时候，实际上操作系统的第一个用户进程“init”进程都还没有启动，因为如果启动的话会输出“init: starting sh”。  
-第2张图是在gdb中查看线程的情况，发现是某个CPU上到了断点处，但是实际上并没有真正的执行，因为此时如果在gdb中使用“print”语句，查看“uthread.c”中全局变量的信息，实际上并没有。  
+第2张图是在gdb中查看线程的情况，发现是某个CPU上到了断点处，但是实际上并没有真正的执行，因为此时如果在gdb中使用“print”语句，查看“uthread.c”中全局变量的信息，并没有相对应的信息。  
 所以，自己仍然是不能理解这个原因，为什么程序在尚未运行的时候会被触发，甚至在操作系统的启动之前！  
 ******  
 实验二：基于pthread线程库解决“keys missing”的问题，并完成线程加速  
